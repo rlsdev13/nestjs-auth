@@ -5,8 +5,9 @@ import { MongoExceptionFilter } from './filters/mongo.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const { httpAdapter } = app.get(HttpAdapterHost)
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true
+  }));
   app.useGlobalFilters(new MongoExceptionFilter());
   await app.listen(process.env.PORT);
 }

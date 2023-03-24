@@ -34,7 +34,9 @@ export class User {
     })
     password: string;
 
-    @Prop()
+    @Prop({
+        default : false
+    })
     deleted: boolean = false;
 
 }
