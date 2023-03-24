@@ -1,9 +1,27 @@
-import { ArgumentsHost, Catch, ConflictException, ExceptionFilter } from '@nestjs/common';
-import { MongooseError } from 'mongoose';
+import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
+import { mongo } from 'mongoose';
+import { MongoServerError } from 'mongodb';
+import { Response } from 'express';
 
-@Catch()
+@Catch(mongo.MongoServerError)
 export class MongoExceptionFilter implements ExceptionFilter {
-  catch(exception: MongooseError, host: ArgumentsHost) {
-    console.log('MENSAJE',exception.message);
+  catch(exception: MongoServerError, host: ArgumentsHost) {
+
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse<Response>();
+    let message = '';
+
+    switch (exception.code){
+      case 11000:
+        message = `Duplicate unique key '${Object.keys(exception.keyValue)}'`;
+      default:
+        break;
+    }
+
+    response.status(400).json({
+      statusCode : 400,
+      message
+    })
+    
   }
 }
