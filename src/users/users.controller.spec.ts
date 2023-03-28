@@ -1,30 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
 import { UsersController } from './users.controller';
+import { UsersServiceMock } from './users.mock.service';
 import { UsersService } from './users.service';
 
 describe('UsersController', () => {
   let controller: UsersController;
-  let mockUsersService : Partial<UsersService>;
+  let service: UsersService;
 
   beforeEach(async () => {
-    mockUsersService = {
-      create : jest.fn((createUserDto : CreateUserDto) => {
-        return Promise.resolve({
-          id : Date.now().toString(),
-          ...createUserDto,
-          deleted : false,
-        } as User)
-      }),
-      update : jest.fn((id : string, updateUserDto : UpdateUserDto) => {
-        return Promise.resolve({
-          id : Date.now().toString(),
-          ...updateUserDto,
-          deleted : false
-        } as User )
-      })
+    const UsersServiceProvider = {
+      provide : UsersService,
+      useClass : UsersServiceMock
     }
 
     const module: TestingModule = await Test.createTestingModule({
@@ -32,10 +20,11 @@ describe('UsersController', () => {
       providers: [UsersService],
     })
       .overrideProvider(UsersService)
-      .useValue(mockUsersService)
+      .useClass(UsersServiceMock)//user value for functions
       .compile();
 
     controller = module.get<UsersController>(UsersController);
+    service = module.get<UsersService>(UsersService);
   });
 
   it('should be defined', () => {
@@ -65,6 +54,7 @@ describe('UsersController', () => {
       name : 'User update'
     };
 
+    const updateSpy = jest.spyOn(service,'update');
     const { deleted, ...user } = await controller.update(id,updateUserDto);
 
     expect(user).toEqual({
@@ -72,11 +62,10 @@ describe('UsersController', () => {
       ...user
     });
 
-    expect(mockUsersService.update).toHaveBeenCalledWith(
+    expect(updateSpy).toHaveBeenCalledWith(
       id,
       updateUserDto
     )
   });
-
 
 });
