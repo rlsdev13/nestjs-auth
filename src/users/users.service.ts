@@ -23,8 +23,8 @@ export class UsersService {
     return this.userModel.findById(id).exec();
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) : Promise<User> {
-    const user = this.findOne(id);
+  async update(id: string, updateUserDto: UpdateUserDto) : Promise<User> {
+    const user = await this.findOne(id);
 
     if(!user){
       throw new NotFoundException('User not found', { cause: new Error(), description: `User with id ${id} not found` })
@@ -34,12 +34,12 @@ export class UsersService {
   }
 
   async remove(id: string) : Promise<User> {
-    const user = this.findOne(id);
+    const user = await this.findOne(id);
 
     if(!user){
       throw new NotFoundException('User not found', { cause: new Error(), description: `User with id ${id} not found` })
     }
 
-    return this.userModel.findByIdAndUpdate(id, { deleted : true }, { new : true })
+    return this.userModel.findByIdAndUpdate(id, { deleted : true }, { new : true }).exec()
   }
 }
