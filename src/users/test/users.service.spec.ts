@@ -1,10 +1,10 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Model } from 'mongoose';
-import { CreateUserDto } from './dto/create-user.dto';
-import { User } from './entities/user.entity';
+import { CreateUserDto } from './../dto/create-user.dto';
+import { User } from './../entities/user.entity';
 import { UserRepositoryMock } from './users.mock.repo';
-import { UsersService } from './users.service';
+import { UsersService } from './../users.service';
 
 
 describe('UsersService', () => {
