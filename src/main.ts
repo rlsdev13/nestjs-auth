@@ -15,7 +15,6 @@ async function bootstrap() {
     .setTitle('AppTitile')
     .setDescription('App description')
     .setVersion('0.1')
-    .addTag('app')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
