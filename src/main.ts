@@ -2,6 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { MongoExceptionFilter } from './filters/mongo.filter';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -9,6 +10,17 @@ async function bootstrap() {
     whitelist: true
   }));
   app.useGlobalFilters(new MongoExceptionFilter());
+
+  const config = new DocumentBuilder()
+    .setTitle('AppTitile')
+    .setDescription('App description')
+    .setVersion('0.1')
+    .addTag('app')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
+  
   await app.listen(process.env.PORT);
 }
 bootstrap();
