@@ -7,7 +7,8 @@ export class AuthController {
     constructor(private readonly authService : AuthService){}
 
     @Post()
-    login(@Body() dataLogin : LoginDto){
-        return this.authService.signIn(dataLogin);
+    async login(@Body() dataLogin : LoginDto){
+        const usr = await this.authService.validateUser(dataLogin);
+        return this.authService.jwtGenerateToken(usr);
     }
 }
