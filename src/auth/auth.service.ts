@@ -4,6 +4,7 @@ import * as bcrypt from 'bcryptjs';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { User } from '../users/entities/user.entity';
+import { JWTPayload } from './interfaces/jwt.interface';
 
 @Injectable()
 export class AuthService {
@@ -30,12 +31,13 @@ export class AuthService {
         return user;
     }
 
-    async jwtGenerateToken(user : User){ 
+    async jwtGenerateToken(user : User) : Promise<{access_token : string, user : User}>{ 
         const { _id: id } = user as any;
         
-        const payload = { id };
-
-
+        const payload : JWTPayload = { 
+            userId : id
+        };
+      
         return {
             access_token: this.jwtService.sign(payload),
             user
